@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BlogSpace</title>
+  <link rel="stylesheet" href="../style.css">
+
+  
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="logo">BlogSpace</div>
+
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="create-blog.html">Create Blog</a></li>
+    </ul>
+  </nav>
+
+  <main class="dashboard">
+    <div class="dashboard-header">
+      <div>
+        <h1>My Dashboard</h1>
+        <p id="welcomeMessage">Manage your blog posts in one place.</p>
+      </div>
+
+      <div class="dashboard-actions">
+        <a href="create-blog.html" class="btn">+ Create Blog</a>
+        <button class="secondary-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <p id="successMessage" class="success-message" role="status"></p>
+
+    <h2>My Blogs</h2>
+
+    <div id="blogList"></div>
+
+    <div class="empty-state" id="emptyState">
+      <h3>No blogs yet!</h3>
+      <p>Start sharing your ideas by creating your first blog.</p>
+      <a href="create-blog.html" class="btn">Create Your First Blog</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 BlogSpace. All rights reserved.
+  </footer>
+
+  <script>
+    
+    const loggedInUser = JSON.parse(
+      localStorage.getItem("loggedInUser") || "null"
+    );
+
+    if (!loggedInUser) {
+      window.location.replace("login.html");
+    } else {
+      document.getElementById("welcomeMessage").textContent =
+        "Welcome, " + loggedInUser.name + "! Manage your blog posts here.";
+
+      const blogList = document.getElementById("blogList");
+      const emptyState = document.getElementById("emptyState");
+      const successMessage = document.getElementById("successMessage");
+
+      function displayBlogs() {
+        const blogs = JSON.parse(localStorage.getItem("blogs") || "[]");
+
+        blogList.innerHTML = "";
+
+        if (blogs.length === 0) {
+          emptyState.style.display = "block";
+          return;
+        }
+
+        emptyState.style.display = "none";
+
+        blogs.forEach(function (blog, index) {
+          const article = document.createElement("article");
+          article.className = "blog-item";
+
+          const title = document.createElement("h3");
+          title.textContent = blog.title;
+
+          const content = document.createElement("p");
+          content.textContent = blog.content;
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete Blog";
+          deleteButton.className = "delete-btn";
+
+          deleteButton.addEventListener("click", function () {
+            const updatedBlogs = JSON.parse(
+              localStorage.getItem("blogs") || "[]"
+            );
+
+            updatedBlogs.splice(index, 1);
+            localStorage.setItem("blogs", JSON.stringify(updatedBlogs));
+
+            successMessage.textContent = "Blog deleted successfully!";
+            displayBlogs();
+          });
+
+          article.appendChild(title);
+          article.appendChild(content);
+          article.appendChild(deleteButton);
+
+          blogList.appendChild(article);
+        });
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", function () {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "login.html";
+      });
+
+      displayBlogs();
+    }
+  </script>
+</body>
+</html>

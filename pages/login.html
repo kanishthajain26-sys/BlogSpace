@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - BlogSpace</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">BlogSpace</div>
+
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="register.html">Register</a></li>
+    </ul>
+  </nav>
+
+  <main class="auth-container">
+    <h1>Welcome Back!</h1>
+    <p>Login to your BlogSpace account.</p>
+
+    <form class="auth-form" id="loginForm">
+      <label for="email">Email Address</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter your password"
+        required
+      >
+
+      <button type="submit" class="btn">Login</button>
+      <p id="message" role="status"></p>
+    </form>
+
+    <div class="auth-link">
+      Don't have an account?
+      <a href="register.html">Register here</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 BlogSpace. All rights reserved.
+  </footer>
+
+  
+<script>
+  const loginForm = document.getElementById("loginForm");
+  const message = document.getElementById("message");
+
+  loginForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    const user = users.find(function (item) {
+      return item.email === email && item.password === password;
+    });
+
+    if (!user) {
+      message.style.color = "#dc2626";
+      message.textContent = "Invalid email or password. Please try again.";
+      return;
+    }
+
+    localStorage.setItem("loggedInUser", JSON.stringify({
+      name: user.name,
+      email: user.email
+    }));
+
+    message.style.color = "#16a34a";
+    message.textContent = "Login successful! Redirecting to dashboard...";
+
+    setTimeout(function () {
+      window.location.href = "dashboard.html";
+    }, 1000);
+  });
+</script>
+
+
+</body>
+</html>

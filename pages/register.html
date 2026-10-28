@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - BlogSpace</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">BlogSpace</div>
+
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
+
+  <main class="auth-container">
+    <h1>Create Account</h1>
+    <p>Join BlogSpace and start sharing your ideas.</p>
+
+    <form class="auth-form" id="registerForm">
+
+      <label for="name">Full Name</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter your full name"
+        required
+      >
+
+      <label for="email">Email Address</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Create a password"
+        minlength="6"
+        required
+      >
+
+      <label for="confirmPassword">Confirm Password</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Re-enter your password"
+        minlength="6"
+        required
+      >
+
+      <button type="submit" class="btn">Create Account</button>
+
+      <p id="message" role="status"></p>
+    </form>
+
+    <div class="auth-link">
+      Already have an account?
+      <a href="login.html">Login here</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 BlogSpace. All rights reserved.
+  </footer>
+
+<script>
+  const registerForm = document.getElementById("registerForm");
+  const message = document.getElementById("message");
+
+  registerForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (password !== confirmPassword) {
+      message.style.color = "#dc2626";
+      message.textContent = "Passwords do not match!";
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    const existingUser = users.find(function (user) {
+      return user.email === email;
+    });
+
+    if (existingUser) {
+      message.style.color = "#dc2626";
+      message.textContent = "This email is already registered. Please login.";
+      return;
+    }
+
+    users.push({
+      name: name,
+      email: email,
+      password: password
+    });
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    message.style.color = "#16a34a";
+    message.textContent = "Account created successfully! Redirecting to login...";
+
+    registerForm.reset();
+
+    setTimeout(function () {
+      window.location.href = "login.html";
+    }, 1500);
+  });
+</script>
+
+ 
+
+</body>
+</html>
