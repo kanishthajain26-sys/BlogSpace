@@ -55,31 +55,39 @@
 
   
 <script>
-  const loginForm = document.getElementById("loginForm");
-  const message = document.getElementById("message");
+  
+const loginForm = document.getElementById("loginForm");
+const message = document.getElementById("message");
 
-  loginForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+loginForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
 
-    const email = document.getElementById("email").value.trim().toLowerCase();
-    const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const password = document.getElementById("password").value;
 
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-    const user = users.find(function (item) {
-      return item.email === email && item.password === password;
+  try {
+    // Backend API call
+    const response = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
     });
 
-    if (!user) {
+    const data = await response.json();
+
+    if (!response.ok) {
       message.style.color = "#dc2626";
-      message.textContent = "Invalid email or password. Please try again.";
+      message.textContent = data.message;
       return;
     }
 
-    localStorage.setItem("loggedInUser", JSON.stringify({
-      name: user.name,
-      email: user.email
-    }));
+    // Save logged-in user
+    localStorage.setItem("loggedInUser", JSON.stringify(data.user));
 
     message.style.color = "#16a34a";
     message.textContent = "Login successful! Redirecting to dashboard...";
@@ -87,7 +95,14 @@
     setTimeout(function () {
       window.location.href = "dashboard.html";
     }, 1000);
-  });
+
+  } catch (error) {
+    message.style.color = "#dc2626";
+    message.textContent = "Unable to connect to server!";
+    console.error(error);
+  }
+});
+
 </script>
 
 

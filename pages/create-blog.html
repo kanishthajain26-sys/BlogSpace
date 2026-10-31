@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
   <nav class="navbar">
     <div class="logo">BlogSpace</div>
 
@@ -62,42 +61,75 @@
   </footer>
 
   <script>
-    const blogForm = document.getElementById("blogForm");
-    const message = document.getElementById("message");
+    
+const blogForm = document.getElementById("blogForm");
+const message = document.getElementById("message");
 
-    blogForm.addEventListener("submit", function (event) {
-      event.preventDefault();
+blogForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
 
-      const title = document.getElementById("title").value.trim();
-      const category = document.getElementById("category").value;
-      const content = document.getElementById("content").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const category = document.getElementById("category").value;
+  const content = document.getElementById("content").value.trim();
 
-      if (!title || !category || !content) {
-        message.textContent = "Please fill in all fields.";
-        return;
+  // Get logged-in user
+  const loggedInUser = JSON.parse(
+    localStorage.getItem("loggedInUser") || "null"
+  );
+
+  if (!loggedInUser) {
+    message.style.color = "#dc2626";
+    message.textContent = "Please login first!";
+    return;
+  }
+
+  if (!title || !category || !content) {
+    message.style.color = "#dc2626";
+    message.textContent = "Please fill in all fields.";
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/blogs/create",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title: title,
+          category: category,
+          content: content,
+          author: loggedInUser.name
+        })
       }
+    );
 
-      const blogs = JSON.parse(localStorage.getItem("blogs") || "[]");
+    const data = await response.json();
 
-      const newBlog = {
-        id: Date.now(),
-        title: title,
-        category: category,
-        content: content,
-        date: new Date().toLocaleDateString()
-      };
+    if (!response.ok) {
+      message.style.color = "#dc2626";
+      message.textContent = data.message;
+      return;
+    }
 
-      blogs.push(newBlog);
-      localStorage.setItem("blogs", JSON.stringify(blogs));
+    message.style.color = "#16a34a";
+    message.textContent = "Blog published successfully!";
 
-      message.textContent = "Blog published successfully!";
+    blogForm.reset();
 
-      blogForm.reset();
+    setTimeout(function () {
+      window.location.href = "dashboard.html";
+    }, 1500);
 
-      setTimeout(function () {
-        window.location.href = "dashboard.html";
-      }, 1000);
-    });
+  } catch (error) {
+    message.style.color = "#dc2626";
+    message.textContent = "Unable to connect to server!";
+    console.error(error);
+  }
+});
+
   </script>
 
 </body>

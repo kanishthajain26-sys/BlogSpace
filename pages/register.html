@@ -74,52 +74,63 @@
   </footer>
 
 <script>
-  const registerForm = document.getElementById("registerForm");
-  const message = document.getElementById("message");
+  
+const registerForm = document.getElementById("registerForm");
+const message = document.getElementById("message");
 
-  registerForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+registerForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
 
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim().toLowerCase();
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
 
-    if (password !== confirmPassword) {
-      message.style.color = "#dc2626";
-      message.textContent = "Passwords do not match!";
-      return;
-    }
+  // Check password
+  if (password !== confirmPassword) {
+    message.style.color = "#dc2626";
+    message.textContent = "Passwords do not match!";
+    return;
+  }
 
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-    const existingUser = users.find(function (user) {
-      return user.email === email;
+  try {
+    // Backend API call
+    const response = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: password
+      })
     });
 
-    if (existingUser) {
+    const data = await response.json();
+
+    if (!response.ok) {
       message.style.color = "#dc2626";
-      message.textContent = "This email is already registered. Please login.";
+      message.textContent = data.message;
       return;
     }
-
-    users.push({
-      name: name,
-      email: email,
-      password: password
-    });
-
-    localStorage.setItem("users", JSON.stringify(users));
 
     message.style.color = "#16a34a";
-    message.textContent = "Account created successfully! Redirecting to login...";
+    message.textContent = "Account created successfully! Redirecting...";
 
     registerForm.reset();
 
     setTimeout(function () {
       window.location.href = "login.html";
     }, 1500);
-  });
+
+  } catch (error) {
+    message.style.color = "#dc2626";
+    message.textContent = "Unable to connect to server!";
+    console.error(error);
+  }
+});
+
 </script>
 
  
