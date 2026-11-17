@@ -1,6 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,7 +36,7 @@
 
     <p id="successMessage" class="success-message"></p>
 
-    <h2>My Blogs</h2>
+    <h2>All Blogs</h2>
 
     <div id="blogList"></div>
 
@@ -87,9 +88,8 @@
             throw new Error(data.message || "Unable to fetch blogs");
           }
 
-          const myBlogs = data.blogs.filter(function (blog) {
-            return blog.author === loggedInUser.name;
-          });
+          const myBlogs = data.blogs;
+          
 
           blogList.innerHTML = "";
 
@@ -100,26 +100,38 @@
 
           emptyState.style.display = "none";
 
-          myBlogs.reverse().forEach(function (blog) {
+          myBlogs.forEach(function (blog) {
 
             const article = document.createElement("article");
             article.className = "blog-card";
 
+            // BLOG TITLE
             const title = document.createElement("h3");
             title.textContent = blog.title;
 
+            // CATEGORY
             const category = document.createElement("p");
             category.textContent = "Category: " + blog.category;
 
+            // CONTENT
             const content = document.createElement("p");
             content.textContent = blog.content;
 
+            // AUTHOR
             const author = document.createElement("p");
             author.textContent = "Author: " + blog.author;
 
+            // DATE
             const date = document.createElement("p");
             date.textContent = "Published: " +
               new Date(blog.createdAt).toLocaleDateString();
+
+            // READ MORE BUTTON
+            const readMoreButton = document.createElement("a");
+            readMoreButton.textContent = "Read More";
+            readMoreButton.href =
+              "blog-details.html?id=" + encodeURIComponent(blog._id);
+            readMoreButton.className = "btn";
 
             // EDIT BUTTON
             const editButton = document.createElement("button");
@@ -148,7 +160,8 @@
               try {
 
                 const deleteResponse = await fetch(
-                  "http://localhost:5000/api/blogs/" + blog.id,
+                  "http://localhost:5000/api/blogs/" +
+                  encodeURIComponent(blog._id),
                   {
                     method: "DELETE"
                   }
@@ -168,17 +181,20 @@
               } catch (error) {
 
                 console.error(error);
-                successMessage.textContent = "Unable to delete blog!";
+                successMessage.textContent =
+                  "Unable to delete blog!";
 
               }
 
             });
 
+            // ADD ELEMENTS TO BLOG CARD
             article.appendChild(title);
             article.appendChild(category);
             article.appendChild(content);
             article.appendChild(author);
             article.appendChild(date);
+            article.appendChild(readMoreButton);
             article.appendChild(editButton);
             article.appendChild(deleteButton);
 
@@ -198,7 +214,7 @@
       // SHOW EDIT FORM
       function showEditForm(blog) {
 
-        editingId = blog.id;
+        editingId = blog._id;
 
         blogList.innerHTML = "";
 
@@ -243,9 +259,11 @@
         cancelButton.textContent = "Cancel";
 
         cancelButton.addEventListener("click", function () {
+
           editingId = null;
           successMessage.textContent = "";
           displayBlogs();
+
         });
 
         form.appendChild(heading);
@@ -283,7 +301,8 @@
           try {
 
             const response = await fetch(
-              "http://localhost:5000/api/blogs/" + editingId,
+              "http://localhost:5000/api/blogs/" +
+              encodeURIComponent(editingId),
               {
                 method: "PUT",
                 headers: {
@@ -328,6 +347,7 @@
         }
       );
 
+      // LOAD BLOGS
       displayBlogs();
 
     }

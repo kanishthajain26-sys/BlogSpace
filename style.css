@@ -846,3 +846,23 @@ footer {
   }
 
 }
+
+/* Read More Button Fix */
+.blog-card a.btn {
+  color: #ffffff;
+  background: var(--primary);
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  margin: 10px 0 15px;
+}
+
+.blog-card a.btn:hover {
+  color: #ffffff;
+  background: var(--primary-hover);
+}
