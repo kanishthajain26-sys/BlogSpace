@@ -866,3 +866,32 @@ footer {
   color: #ffffff;
   background: var(--primary-hover);
 }
+
+
+
+/* SEARCH AND CATEGORY FILTER */
+
+.blog-filters {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.blog-filters input,
+.blog-filters select {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.blog-filters input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.blog-filters select {
+  min-width: 180px;
+  cursor: pointer;
+}

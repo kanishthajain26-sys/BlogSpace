@@ -38,6 +38,21 @@
 
     <h2>All Blogs</h2>
 
+    <!-- SEARCH AND CATEGORY FILTER -->
+    <div class="blog-filters">
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search blogs by title..."
+      >
+
+      <select id="categoryFilter">
+        <option value="">All Categories</option>
+      </select>
+
+    </div>
+
     <div id="blogList"></div>
 
     <div class="empty-state" id="emptyState">
@@ -62,7 +77,11 @@
     const emptyState = document.getElementById("emptyState");
     const successMessage = document.getElementById("successMessage");
 
+    const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+
     let editingId = null;
+    let allBlogs = [];
 
     if (!loggedInUser) {
 
@@ -88,119 +107,52 @@
             throw new Error(data.message || "Unable to fetch blogs");
           }
 
-          const myBlogs = data.blogs;
-          
+          allBlogs = data.blogs;
 
-          blogList.innerHTML = "";
+          // GET UNIQUE CATEGORIES
+          // ALL AVAILABLE CATEGORIES
+const categories = [
+  "Technology",
+  "Education",
+  "Lifestyle",
+  "Travel",
+  "Food",
+  "Health",
+  "Business",
+  "Entertainment",
+  "Sports",
+  "Fashion",
+  "Other"
+];
 
-          if (myBlogs.length === 0) {
-            emptyState.style.display = "block";
-            return;
-          }
+categoryFilter.innerHTML =
+  '<option value="">All Categories</option>';
 
-          emptyState.style.display = "none";
+categories.forEach(function (category) {
 
-          myBlogs.forEach(function (blog) {
+  const option = document.createElement("option");
 
-            const article = document.createElement("article");
-            article.className = "blog-card";
+  option.value = category;
+  option.textContent = category;
 
-            // BLOG TITLE
-            const title = document.createElement("h3");
-            title.textContent = blog.title;
+  categoryFilter.appendChild(option);
 
-            // CATEGORY
-            const category = document.createElement("p");
-            category.textContent = "Category: " + blog.category;
+});
 
-            // CONTENT
-            const content = document.createElement("p");
-            content.textContent = blog.content;
+          categoryFilter.innerHTML =
+            '<option value="">All Categories</option>';
 
-            // AUTHOR
-            const author = document.createElement("p");
-            author.textContent = "Author: " + blog.author;
+          categories.forEach(function (category) {
 
-            // DATE
-            const date = document.createElement("p");
-            date.textContent = "Published: " +
-              new Date(blog.createdAt).toLocaleDateString();
+            const option = document.createElement("option");
+            option.value = category;
+            option.textContent = category;
 
-            // READ MORE BUTTON
-            const readMoreButton = document.createElement("a");
-            readMoreButton.textContent = "Read More";
-            readMoreButton.href =
-              "blog-details.html?id=" + encodeURIComponent(blog._id);
-            readMoreButton.className = "btn";
-
-            // EDIT BUTTON
-            const editButton = document.createElement("button");
-            editButton.type = "button";
-            editButton.textContent = "Edit Blog";
-            editButton.className = "edit-btn";
-
-            editButton.addEventListener("click", function () {
-              showEditForm(blog);
-            });
-
-            // DELETE BUTTON
-            const deleteButton = document.createElement("button");
-            deleteButton.type = "button";
-            deleteButton.textContent = "Delete Blog";
-            deleteButton.className = "delete-btn";
-
-            deleteButton.addEventListener("click", async function () {
-
-              const confirmDelete = confirm(
-                "Are you sure you want to delete this blog?"
-              );
-
-              if (!confirmDelete) return;
-
-              try {
-
-                const deleteResponse = await fetch(
-                  "http://localhost:5000/api/blogs/" +
-                  encodeURIComponent(blog._id),
-                  {
-                    method: "DELETE"
-                  }
-                );
-
-                const deleteData = await deleteResponse.json();
-
-                if (!deleteResponse.ok) {
-                  throw new Error(deleteData.message);
-                }
-
-                successMessage.textContent =
-                  "Blog deleted successfully!";
-
-                displayBlogs();
-
-              } catch (error) {
-
-                console.error(error);
-                successMessage.textContent =
-                  "Unable to delete blog!";
-
-              }
-
-            });
-
-            // ADD ELEMENTS TO BLOG CARD
-            article.appendChild(title);
-            article.appendChild(category);
-            article.appendChild(content);
-            article.appendChild(author);
-            article.appendChild(date);
-            article.appendChild(readMoreButton);
-            article.appendChild(editButton);
-            article.appendChild(deleteButton);
-
-            blogList.appendChild(article);
+            categoryFilter.appendChild(option);
 
           });
+
+          showFilteredBlogs();
 
         } catch (error) {
 
@@ -210,6 +162,160 @@
         }
 
       }
+
+
+      // SEARCH AND CATEGORY FILTER
+      function showFilteredBlogs() {
+
+        const searchText = searchInput.value.toLowerCase().trim();
+
+        const selectedCategory =
+          categoryFilter.value.toLowerCase();
+
+        const filteredBlogs = allBlogs.filter(function (blog) {
+
+          const matchesSearch = blog.title
+            .toLowerCase()
+            .includes(searchText);
+
+          const matchesCategory = selectedCategory === "" ||
+            blog.category.toLowerCase() === selectedCategory;
+
+          return matchesSearch && matchesCategory;
+
+        });
+
+        blogList.innerHTML = "";
+
+        if (allBlogs.length === 0) {
+
+          emptyState.style.display = "block";
+          return;
+
+        }
+
+        emptyState.style.display = "none";
+
+        if (filteredBlogs.length === 0) {
+
+          blogList.textContent = "No matching blogs found.";
+          return;
+
+        }
+
+        // DISPLAY FILTERED BLOGS
+        filteredBlogs.forEach(function (blog) {
+
+          const article = document.createElement("article");
+          article.className = "blog-card";
+
+          // BLOG TITLE
+          const title = document.createElement("h3");
+          title.textContent = blog.title;
+
+          // CATEGORY
+          const category = document.createElement("p");
+          category.textContent = "Category: " + blog.category;
+
+          // CONTENT
+          const content = document.createElement("p");
+          content.textContent = blog.content;
+
+          // AUTHOR
+          const author = document.createElement("p");
+          author.textContent = "Author: " + blog.author;
+
+          // DATE
+          const date = document.createElement("p");
+          date.textContent = "Published: " +
+            new Date(blog.createdAt).toLocaleDateString();
+
+          // READ MORE BUTTON
+          const readMoreButton = document.createElement("a");
+          readMoreButton.textContent = "Read More";
+          readMoreButton.href =
+            "blog-details.html?id=" + encodeURIComponent(blog._id);
+          readMoreButton.className = "btn";
+
+          // EDIT BUTTON
+          const editButton = document.createElement("button");
+          editButton.type = "button";
+          editButton.textContent = "Edit Blog";
+          editButton.className = "edit-btn";
+
+          editButton.addEventListener("click", function () {
+            showEditForm(blog);
+          });
+
+          // DELETE BUTTON
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.textContent = "Delete Blog";
+          deleteButton.className = "delete-btn";
+
+          deleteButton.addEventListener("click", async function () {
+
+            const confirmDelete = confirm(
+              "Are you sure you want to delete this blog?"
+            );
+
+            if (!confirmDelete) return;
+
+            try {
+
+              const deleteResponse = await fetch(
+                "http://localhost:5000/api/blogs/" +
+                encodeURIComponent(blog._id),
+                {
+                  method: "DELETE"
+                }
+              );
+
+              const deleteData = await deleteResponse.json();
+
+              if (!deleteResponse.ok) {
+                throw new Error(deleteData.message);
+              }
+
+              successMessage.textContent =
+                "Blog deleted successfully!";
+
+              displayBlogs();
+
+            } catch (error) {
+
+              console.error(error);
+              successMessage.textContent =
+                "Unable to delete blog!";
+
+            }
+
+          });
+
+          // ADD ELEMENTS TO BLOG CARD
+          article.appendChild(title);
+          article.appendChild(category);
+          article.appendChild(content);
+          article.appendChild(author);
+          article.appendChild(date);
+          article.appendChild(readMoreButton);
+          article.appendChild(editButton);
+          article.appendChild(deleteButton);
+
+          blogList.appendChild(article);
+
+        });
+
+      }
+
+
+      // SEARCH INPUT EVENT
+      searchInput.addEventListener("input", showFilteredBlogs);
+
+
+      // CATEGORY FILTER EVENT
+      categoryFilter.addEventListener("change", showFilteredBlogs);
+
 
       // SHOW EDIT FORM
       function showEditForm(blog) {
@@ -336,6 +442,7 @@
 
       }
 
+
       // LOGOUT
       document.getElementById("logoutBtn").addEventListener(
         "click",
@@ -346,6 +453,7 @@
 
         }
       );
+
 
       // LOAD BLOGS
       displayBlogs();
