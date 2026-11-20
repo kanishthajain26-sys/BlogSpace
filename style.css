@@ -329,3 +329,122 @@ footer p {
         padding: 9px 12px;
     }
 }
+
+
+/* Additional Responsive Improvements */
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 18px 5%;
+        flex-wrap: wrap;
+    }
+
+    .logo {
+        font-size: 23px;
+    }
+
+    nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .nav-buttons {
+        margin-left: auto;
+    }
+
+    .hero {
+        min-height: auto;
+        padding: 65px 6%;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .hero-description {
+        font-size: 15px;
+    }
+
+    .blogs-section {
+        padding: 55px 5%;
+    }
+
+    .blog-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+    .blog-tools {
+        flex-wrap: wrap;
+    }
+
+    .blog-tools input,
+    .blog-tools select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        gap: 14px;
+    }
+
+    nav {
+        justify-content: flex-start;
+        gap: 12px;
+    }
+
+    nav a {
+        font-size: 13px;
+    }
+
+    .nav-buttons {
+        gap: 5px;
+    }
+
+    .login-btn,
+    .signup-btn {
+        padding: 9px 11px;
+        font-size: 12px;
+    }
+
+    .hero {
+        padding: 50px 6%;
+    }
+
+    .hero h1 {
+        font-size: 31px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        text-align: center;
+    }
+
+    .blogs-section {
+        padding: 45px 5%;
+    }
+
+    .section-heading h2 {
+        font-size: 26px;
+    }
+
+    .blog-container {
+        grid-template-columns: 1fr;
+    }
+
+    .blog-info {
+        padding: 18px;
+    }
+
+    .about-section h2 {
+        font-size: 25px;
+    }
+}
