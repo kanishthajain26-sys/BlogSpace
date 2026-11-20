@@ -2,7 +2,8 @@
 
 ## About the Project
 
-BlogSpace is a full-stack blog application that allows users to create, read, update, delete, search, and explore blogs.
+BlogSpace is a full-stack blog application that allows users to create, read, update, delete, search, and 
+explore blogs.
 
 The application includes user authentication and a personal dashboard where logged-in users can manage their own blogs.
 
