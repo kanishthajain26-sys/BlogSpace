@@ -1,4 +1,3 @@
-
 {
   "name": "blogspace-server",
   "version": "1.0.0",
@@ -11,7 +10,7 @@
     "bcryptjs": "*",
     "cors": "*",
     "dotenv": "*",
-    "express": "*",
+    "express": "^4.21.2",
     "jsonwebtoken": "*",
     "mongoose": "*"
   },
