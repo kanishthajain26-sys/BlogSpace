@@ -3,13 +3,14 @@ const express = require("express");
 const router = express.Router();
 
 const Blog = require("../models/Blog");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // CREATE BLOG API
-router.post("/create", async (req, res) => {
+router.post("/create", authMiddleware, async (req, res) => {
   try {
-    const { title, category, content, author } = req.body;
+    const { title, category, content } = req.body;
 
-    if (!title || !category || !content || !author) {
+    if (!title || !category || !content) {
       return res.status(400).json({
         message: "All fields are required"
       });
@@ -19,7 +20,8 @@ router.post("/create", async (req, res) => {
       title,
       category,
       content,
-      author
+      author: req.user,
+      user: req.user
     });
 
     await newBlog.save();
@@ -36,14 +38,14 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// GET ALL BLOGS API
-router.get("/", async (req, res) => {
+// GET LOGGED-IN USER'S BLOGS
+router.get("/my-blogs", authMiddleware, async (req, res) => {
   try {
-    const blogs = await Blog.find().sort({ createdAt: -1 });
+    const blogs = await Blog.find({
+      user: req.user
+    }).sort({ createdAt: -1 });
 
-    res.status(200).json({
-      blogs
-    });
+    res.status(200).json({ blogs });
 
   } catch (error) {
     res.status(500).json({
@@ -52,7 +54,21 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET SINGLE BLOG API
+// GET ALL BLOGS (PUBLIC)
+router.get("/", async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+
+    res.status(200).json({ blogs });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+// GET SINGLE BLOG
 router.get("/:id", async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
@@ -72,8 +88,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// EDIT BLOG API
-router.put("/:id", async (req, res) => {
+// EDIT BLOG
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { title, category, content } = req.body;
 
@@ -83,15 +99,18 @@ router.put("/:id", async (req, res) => {
       });
     }
 
-    const blog = await Blog.findByIdAndUpdate(
-      req.params.id,
+    const blog = await Blog.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user
+      },
       { title, category, content },
       { new: true, runValidators: true }
     );
 
     if (!blog) {
       return res.status(404).json({
-        message: "Blog not found"
+        message: "Blog not found or unauthorized"
       });
     }
 
@@ -107,14 +126,17 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE BLOG API
-router.delete("/:id", async (req, res) => {
+// DELETE BLOG
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
-    const blog = await Blog.findByIdAndDelete(req.params.id);
+    const blog = await Blog.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user
+    });
 
     if (!blog) {
       return res.status(404).json({
-        message: "Blog not found"
+        message: "Blog not found or unauthorized"
       });
     }
 

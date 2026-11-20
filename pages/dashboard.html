@@ -1,466 +1,57 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - BlogSpace</title>
-  <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BlogSpace</title>
+    <link rel="stylesheet" href="auth.css">
 </head>
-
 <body>
 
-  <nav class="navbar">
-    <div class="logo">BlogSpace</div>
+<header class="page-header">
 
-    <ul class="nav-links">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="create-blog.html">Create Blog</a></li>
-    </ul>
-  </nav>
+    <a class="brand" href="../index.html">BlogSpace.</a>
 
-  <main class="dashboard">
-
-    <div class="dashboard-header">
-      <div>
-        <h1>My Dashboard</h1>
-        <p id="welcomeMessage">Manage your blog posts in one place.</p>
-      </div>
-
-      <div class="dashboard-actions">
-        <a href="create-blog.html" class="btn">+ Create Blog</a>
-        <button class="secondary-btn" id="logoutBtn">Logout</button>
-      </div>
+    <div>
+        <a href="../index.html">Home</a>
+        <a href="#" id="logoutBtn" style="margin-left:20px">Logout</a>
     </div>
 
-    <p id="successMessage" class="success-message"></p>
+</header>
 
-    <h2>All Blogs</h2>
+<main class="page-content">
 
-    <!-- SEARCH AND CATEGORY FILTER -->
-    <div class="blog-filters">
+    <div class="dashboard-top">
 
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search blogs by title..."
-      >
+        <div>
+            <h1>My Dashboard</h1>
+            <p class="empty-message">
+                Manage your profile and blogs.
+            </p>
+        </div>
 
-      <select id="categoryFilter">
-        <option value="">All Categories</option>
-      </select>
+        <a href="create-blog.html" class="action-link">
+            + Create Blog
+        </a>
 
     </div>
 
-    <div id="blogList"></div>
+    <section class="profile-box">
+        <h2>My Profile</h2>
+        <p id="userName">Loading...</p>
+        <p id="userEmail"></p>
+    </section>
 
-    <div class="empty-state" id="emptyState">
-      <h3>No blogs yet!</h3>
-      <p>Start sharing your ideas by creating your first blog.</p>
-      <a href="create-blog.html" class="btn">Create Your First Blog</a>
+    <h2>My Blogs</h2>
+
+    <div class="blog-list" id="myBlogs">
+        <p class="empty-message">Loading...</p>
     </div>
 
-  </main>
+</main>
 
-  <footer>
-    &copy; 2026 BlogSpace. All rights reserved.
-  </footer>
-
-  <script>
-
-    const loggedInUser = JSON.parse(
-      localStorage.getItem("loggedInUser") || "null"
-    );
-
-    const blogList = document.getElementById("blogList");
-    const emptyState = document.getElementById("emptyState");
-    const successMessage = document.getElementById("successMessage");
-
-    const searchInput = document.getElementById("searchInput");
-    const categoryFilter = document.getElementById("categoryFilter");
-
-    let editingId = null;
-    let allBlogs = [];
-
-    if (!loggedInUser) {
-
-      window.location.replace("login.html");
-
-    } else {
-
-      document.getElementById("welcomeMessage").textContent =
-        "Welcome, " + loggedInUser.name + "! Manage your blog posts here.";
-
-      // GET ALL BLOGS
-      async function displayBlogs() {
-
-        try {
-
-          const response = await fetch(
-            "http://localhost:5000/api/blogs"
-          );
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.message || "Unable to fetch blogs");
-          }
-
-          allBlogs = data.blogs;
-
-          // GET UNIQUE CATEGORIES
-          // ALL AVAILABLE CATEGORIES
-const categories = [
-  "Technology",
-  "Education",
-  "Lifestyle",
-  "Travel",
-  "Food",
-  "Health",
-  "Business",
-  "Entertainment",
-  "Sports",
-  "Fashion",
-  "Other"
-];
-
-categoryFilter.innerHTML =
-  '<option value="">All Categories</option>';
-
-categories.forEach(function (category) {
-
-  const option = document.createElement("option");
-
-  option.value = category;
-  option.textContent = category;
-
-  categoryFilter.appendChild(option);
-
-});
-
-          categoryFilter.innerHTML =
-            '<option value="">All Categories</option>';
-
-          categories.forEach(function (category) {
-
-            const option = document.createElement("option");
-            option.value = category;
-            option.textContent = category;
-
-            categoryFilter.appendChild(option);
-
-          });
-
-          showFilteredBlogs();
-
-        } catch (error) {
-
-          console.error(error);
-          blogList.textContent = "Unable to load blogs.";
-
-        }
-
-      }
-
-
-      // SEARCH AND CATEGORY FILTER
-      function showFilteredBlogs() {
-
-        const searchText = searchInput.value.toLowerCase().trim();
-
-        const selectedCategory =
-          categoryFilter.value.toLowerCase();
-
-        const filteredBlogs = allBlogs.filter(function (blog) {
-
-          const matchesSearch = blog.title
-            .toLowerCase()
-            .includes(searchText);
-
-          const matchesCategory = selectedCategory === "" ||
-            blog.category.toLowerCase() === selectedCategory;
-
-          return matchesSearch && matchesCategory;
-
-        });
-
-        blogList.innerHTML = "";
-
-        if (allBlogs.length === 0) {
-
-          emptyState.style.display = "block";
-          return;
-
-        }
-
-        emptyState.style.display = "none";
-
-        if (filteredBlogs.length === 0) {
-
-          blogList.textContent = "No matching blogs found.";
-          return;
-
-        }
-
-        // DISPLAY FILTERED BLOGS
-        filteredBlogs.forEach(function (blog) {
-
-          const article = document.createElement("article");
-          article.className = "blog-card";
-
-          // BLOG TITLE
-          const title = document.createElement("h3");
-          title.textContent = blog.title;
-
-          // CATEGORY
-          const category = document.createElement("p");
-          category.textContent = "Category: " + blog.category;
-
-          // CONTENT
-          const content = document.createElement("p");
-          content.textContent = blog.content;
-
-          // AUTHOR
-          const author = document.createElement("p");
-          author.textContent = "Author: " + blog.author;
-
-          // DATE
-          const date = document.createElement("p");
-          date.textContent = "Published: " +
-            new Date(blog.createdAt).toLocaleDateString();
-
-          // READ MORE BUTTON
-          const readMoreButton = document.createElement("a");
-          readMoreButton.textContent = "Read More";
-          readMoreButton.href =
-            "blog-details.html?id=" + encodeURIComponent(blog._id);
-          readMoreButton.className = "btn";
-
-          // EDIT BUTTON
-          const editButton = document.createElement("button");
-          editButton.type = "button";
-          editButton.textContent = "Edit Blog";
-          editButton.className = "edit-btn";
-
-          editButton.addEventListener("click", function () {
-            showEditForm(blog);
-          });
-
-          // DELETE BUTTON
-          const deleteButton = document.createElement("button");
-          deleteButton.type = "button";
-          deleteButton.textContent = "Delete Blog";
-          deleteButton.className = "delete-btn";
-
-          deleteButton.addEventListener("click", async function () {
-
-            const confirmDelete = confirm(
-              "Are you sure you want to delete this blog?"
-            );
-
-            if (!confirmDelete) return;
-
-            try {
-
-              const deleteResponse = await fetch(
-                "http://localhost:5000/api/blogs/" +
-                encodeURIComponent(blog._id),
-                {
-                  method: "DELETE"
-                }
-              );
-
-              const deleteData = await deleteResponse.json();
-
-              if (!deleteResponse.ok) {
-                throw new Error(deleteData.message);
-              }
-
-              successMessage.textContent =
-                "Blog deleted successfully!";
-
-              displayBlogs();
-
-            } catch (error) {
-
-              console.error(error);
-              successMessage.textContent =
-                "Unable to delete blog!";
-
-            }
-
-          });
-
-          // ADD ELEMENTS TO BLOG CARD
-          article.appendChild(title);
-          article.appendChild(category);
-          article.appendChild(content);
-          article.appendChild(author);
-          article.appendChild(date);
-          article.appendChild(readMoreButton);
-          article.appendChild(editButton);
-          article.appendChild(deleteButton);
-
-          blogList.appendChild(article);
-
-        });
-
-      }
-
-
-      // SEARCH INPUT EVENT
-      searchInput.addEventListener("input", showFilteredBlogs);
-
-
-      // CATEGORY FILTER EVENT
-      categoryFilter.addEventListener("change", showFilteredBlogs);
-
-
-      // SHOW EDIT FORM
-      function showEditForm(blog) {
-
-        editingId = blog._id;
-
-        blogList.innerHTML = "";
-
-        const form = document.createElement("form");
-        form.id = "editBlogForm";
-
-        const heading = document.createElement("h2");
-        heading.textContent = "Edit Your Blog";
-
-        const titleLabel = document.createElement("label");
-        titleLabel.textContent = "Blog Title";
-
-        const titleInput = document.createElement("input");
-        titleInput.type = "text";
-        titleInput.id = "editTitle";
-        titleInput.value = blog.title;
-        titleInput.required = true;
-
-        const categoryLabel = document.createElement("label");
-        categoryLabel.textContent = "Category";
-
-        const categoryInput = document.createElement("input");
-        categoryInput.type = "text";
-        categoryInput.id = "editCategory";
-        categoryInput.value = blog.category;
-        categoryInput.required = true;
-
-        const contentLabel = document.createElement("label");
-        contentLabel.textContent = "Blog Content";
-
-        const contentInput = document.createElement("textarea");
-        contentInput.id = "editContent";
-        contentInput.value = blog.content;
-        contentInput.required = true;
-
-        const updateButton = document.createElement("button");
-        updateButton.type = "submit";
-        updateButton.textContent = "Update Blog";
-
-        const cancelButton = document.createElement("button");
-        cancelButton.type = "button";
-        cancelButton.textContent = "Cancel";
-
-        cancelButton.addEventListener("click", function () {
-
-          editingId = null;
-          successMessage.textContent = "";
-          displayBlogs();
-
-        });
-
-        form.appendChild(heading);
-        form.appendChild(titleLabel);
-        form.appendChild(titleInput);
-        form.appendChild(categoryLabel);
-        form.appendChild(categoryInput);
-        form.appendChild(contentLabel);
-        form.appendChild(contentInput);
-        form.appendChild(updateButton);
-        form.appendChild(cancelButton);
-
-        blogList.appendChild(form);
-
-        // UPDATE BLOG API
-        form.addEventListener("submit", async function (event) {
-
-          event.preventDefault();
-
-          const updatedBlog = {
-            title: titleInput.value.trim(),
-            category: categoryInput.value.trim(),
-            content: contentInput.value.trim()
-          };
-
-          if (
-            !updatedBlog.title ||
-            !updatedBlog.category ||
-            !updatedBlog.content
-          ) {
-            alert("Please fill all fields!");
-            return;
-          }
-
-          try {
-
-            const response = await fetch(
-              "http://localhost:5000/api/blogs/" +
-              encodeURIComponent(editingId),
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(updatedBlog)
-              }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-              throw new Error(data.message);
-            }
-
-            editingId = null;
-
-            successMessage.textContent =
-              "Blog updated successfully!";
-
-            displayBlogs();
-
-          } catch (error) {
-
-            console.error(error);
-            alert("Unable to update blog!");
-
-          }
-
-        });
-
-      }
-
-
-      // LOGOUT
-      document.getElementById("logoutBtn").addEventListener(
-        "click",
-        function () {
-
-          localStorage.removeItem("loggedInUser");
-          window.location.href = "login.html";
-
-        }
-      );
-
-
-      // LOAD BLOGS
-      displayBlogs();
-
-    }
-
-  </script>
+<script src="dashboard.js"></script>
 
 </body>
 </html>

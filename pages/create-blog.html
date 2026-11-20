@@ -2,135 +2,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Blog - BlogSpace</title>
-  <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog - BlogSpace</title>
+    <link rel="stylesheet" href="auth.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="logo">BlogSpace</div>
+    <header class="page-header">
+        <a class="brand" href="../index.html">BlogSpace.</a>
+        <a href="dashboard.html">My Dashboard</a>
+    </header>
 
-    <ul class="nav-links">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
-      <li><a href="login.html">Login</a></li>
-    </ul>
-  </nav>
+    <main class="page-content">
+        <form class="blog-form" id="blogForm">
+            <h1 id="formTitle">Create New Blog</h1>
 
-  <main class="create-blog-container">
-    <h1>Create a New Blog</h1>
-    <p>Share your thoughts and ideas with the world.</p>
+            <label>Blog Title</label>
+            <input type="text" id="title" placeholder="Enter blog title" required>
 
-    <form id="blogForm">
-      <label for="title">Blog Title</label>
-      <input
-        type="text"
-        id="title"
-        name="title"
-        placeholder="Enter your blog title"
-        required
-      >
+            <label>Category</label>
+            <select id="category" required>
+                <option value="">Select category</option>
+                <option value="Technology">Technology</option>
+                <option value="Education">Education</option>
+                <option value="Lifestyle">Lifestyle</option>
+                <option value="Travel">Travel</option>
+                <option value="Programming">Programming</option>
+                <option value="Other">Other</option>
+            </select>
 
-      <label for="category">Category</label>
-      <select id="category" name="category" required>
-        <option value="">Select a category</option>
-        <option value="Technology">Technology</option>
-        <option value="Education">Education</option>
-        <option value="Lifestyle">Lifestyle</option>
-        <option value="Travel">Travel</option>
-        <option value="Other">Other</option>
-      </select>
+            <label>Blog Content</label>
+            <textarea id="content" placeholder="Write your story here..." required></textarea>
 
-      <label for="content">Blog Content</label>
-      <textarea
-        id="content"
-        name="content"
-        rows="10"
-        placeholder="Write your blog here..."
-        required
-      ></textarea>
+            <button type="submit" id="submitBtn">Publish Blog</button>
+            <p id="message" class="message"></p>
+        </form>
+    </main>
 
-      <button type="submit" class="btn">Publish Blog</button>
-      <p id="message" role="status"></p>
+    <script src="blog.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog - BlogSpace</title>
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<header class="page-header">
+    <a class="brand" href="../index.html">BlogSpace.</a>
+    <a href="dashboard.html">My Dashboard</a>
+</header>
+
+<main class="page-content">
+
+    <form class="blog-form" id="blogForm">
+
+        <h1 id="formTitle">Create New Blog</h1>
+
+        <label>Blog Title</label>
+        <input
+            type="text"
+            id="title"
+            required
+            maxlength="150"
+            placeholder="Enter blog title"
+        >
+
+        <label>Category</label>
+        <select id="category" required>
+            <option value="">Select category</option>
+            <option>Technology</option>
+            <option>Education</option>
+            <option>Lifestyle</option>
+            <option>Travel</option>
+            <option>Programming</option>
+            <option>Other</option>
+        </select>
+
+        <label>Blog Content</label>
+        <textarea
+            id="content"
+            required
+            placeholder="Write your story here..."
+        ></textarea>
+
+        <button type="submit" id="submitBtn">
+            Publish Blog
+        </button>
+
+        <p id="message" class="message"></p>
+
     </form>
-  </main>
 
-  <footer>
-    &copy; 2026 BlogSpace. All rights reserved.
-  </footer>
+</main>
 
-  <script>
-    
-const blogForm = document.getElementById("blogForm");
-const message = document.getElementById("message");
-
-blogForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  const title = document.getElementById("title").value.trim();
-  const category = document.getElementById("category").value;
-  const content = document.getElementById("content").value.trim();
-
-  // Get logged-in user
-  const loggedInUser = JSON.parse(
-    localStorage.getItem("loggedInUser") || "null"
-  );
-
-  if (!loggedInUser) {
-    message.style.color = "#dc2626";
-    message.textContent = "Please login first!";
-    return;
-  }
-
-  if (!title || !category || !content) {
-    message.style.color = "#dc2626";
-    message.textContent = "Please fill in all fields.";
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/blogs/create",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          title: title,
-          category: category,
-          content: content,
-          author: loggedInUser.name
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      message.style.color = "#dc2626";
-      message.textContent = data.message;
-      return;
-    }
-
-    message.style.color = "#16a34a";
-    message.textContent = "Blog published successfully!";
-
-    blogForm.reset();
-
-    setTimeout(function () {
-      window.location.href = "dashboard.html";
-    }, 1500);
-
-  } catch (error) {
-    message.style.color = "#dc2626";
-    message.textContent = "Unable to connect to server!";
-    console.error(error);
-  }
-});
-
-  </script>
+<script src="blog.js"></script>
 
 </body>
 </html>

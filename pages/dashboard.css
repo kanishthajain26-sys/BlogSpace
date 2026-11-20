@@ -1,0 +1,84 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6fb;
+    color: #26334d;
+}
+
+header {
+    background: #263b70;
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 28px;
+}
+
+button {
+    background: white;
+    color: #263b70;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+main {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+main > h2 {
+    margin-bottom: 25px;
+}
+
+section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+}
+
+section h3 {
+    color: #263b70;
+    margin-bottom: 18px;
+}
+
+section p {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.blog-card {
+    padding: 18px;
+    margin-top: 15px;
+    border: 1px solid #e5e8f0;
+    border-radius: 9px;
+    background: #fafbff;
+}
+
+main > a {
+    display: inline-block;
+    background: #263b70;
+    color: white;
+    text-decoration: none;
+    padding: 13px 22px;
+    border-radius: 7px;
+}
+
+main > a:hover {
+    background: #192b55;
+}

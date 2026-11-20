@@ -2,138 +2,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - BlogSpace</title>
-  <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - BlogSpace</title>
+    <link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
-  <nav class="navbar">
-    <div class="logo">BlogSpace</div>
+<div class="auth-container">
 
-    <ul class="nav-links">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="login.html">Login</a></li>
-    </ul>
-  </nav>
+    <form class="auth-card" id="registerForm">
 
-  <main class="auth-container">
-    <h1>Create Account</h1>
-    <p>Join BlogSpace and start sharing your ideas.</p>
+        <a href="../index.html" class="auth-logo">
+            BlogSpace<span>.</span>
+        </a>
 
-    <form class="auth-form" id="registerForm">
+        <h2>Create Account</h2>
+        <p class="subtitle">
+            Join our community and share your stories.
+        </p>
 
-      <label for="name">Full Name</label>
-      <input
-        type="text"
-        id="name"
-        placeholder="Enter your full name"
-        required
-      >
+        <label>Full Name</label>
+        <input type="text" id="name" required placeholder="Enter your name">
 
-      <label for="email">Email Address</label>
-      <input
-        type="email"
-        id="email"
-        placeholder="Enter your email"
-        required
-      >
+        <label>Email Address</label>
+        <input type="email" id="email" required placeholder="Enter your email">
 
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        placeholder="Create a password"
-        minlength="6"
-        required
-      >
+        <label>Password</label>
+        <input type="password" id="password" required minlength="6"
+            placeholder="Minimum 6 characters">
 
-      <label for="confirmPassword">Confirm Password</label>
-      <input
-        type="password"
-        id="confirmPassword"
-        placeholder="Re-enter your password"
-        minlength="6"
-        required
-      >
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" required
+            placeholder="Confirm password">
 
-      <button type="submit" class="btn">Create Account</button>
+        <button type="submit">Create Account</button>
 
-      <p id="message" role="status"></p>
+        <p id="message" class="message"></p>
+
+        <p class="auth-footer">
+            Already have an account?
+            <a href="login.html">Login</a>
+        </p>
+
     </form>
 
-    <div class="auth-link">
-      Already have an account?
-      <a href="login.html">Login here</a>
-    </div>
-  </main>
+</div>
 
-  <footer>
-    &copy; 2026 BlogSpace. All rights reserved.
-  </footer>
-
-<script>
-  
-const registerForm = document.getElementById("registerForm");
-const message = document.getElementById("message");
-
-registerForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim().toLowerCase();
-  const password = document.getElementById("password").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-
-  // Check password
-  if (password !== confirmPassword) {
-    message.style.color = "#dc2626";
-    message.textContent = "Passwords do not match!";
-    return;
-  }
-
-  try {
-    // Backend API call
-    const response = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      message.style.color = "#dc2626";
-      message.textContent = data.message;
-      return;
-    }
-
-    message.style.color = "#16a34a";
-    message.textContent = "Account created successfully! Redirecting...";
-
-    registerForm.reset();
-
-    setTimeout(function () {
-      window.location.href = "login.html";
-    }, 1500);
-
-  } catch (error) {
-    message.style.color = "#dc2626";
-    message.textContent = "Unable to connect to server!";
-    console.error(error);
-  }
-});
-
-</script>
-
- 
-
+<script src="auth.js"></script>
 </body>
 </html>

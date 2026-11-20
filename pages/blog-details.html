@@ -2,94 +2,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog Details - BlogSpace</title>
-  <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details - BlogSpace</title>
+    <link rel="stylesheet" href="auth.css">
 </head>
-
 <body>
 
-  <nav class="navbar">
-    <div class="logo">BlogSpace</div>
+<header class="page-header">
+    <a class="brand" href="../index.html">BlogSpace.</a>
+    <a href="dashboard.html">My Dashboard</a>
+</header>
 
-    <ul class="nav-links">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
-    </ul>
-  </nav>
+<main class="page-content">
 
-  <main class="dashboard">
-    <div id="blogDetails">
-      <p>Loading blog...</p>
-    </div>
+    <article class="detail-card" id="blogDetails">
+        <p class="empty-message">Loading blog...</p>
+    </article>
 
-    <a href="dashboard.html" class="btn">Back to Dashboard</a>
-  </main>
+</main>
 
-  <footer>
-    &copy; 2026 BlogSpace. All rights reserved.
-  </footer>
+<script>
+const API = "http://localhost:5000/api";
 
-  <script>
-    const blogDetails = document.getElementById("blogDetails");
+const blogId = new URLSearchParams(
+    window.location.search
+).get("id");
 
-    // Get blog ID from URL
-    const params = new URLSearchParams(window.location.search);
-    const blogId = params.get("id");
+function escapeHTML(value = "") {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
 
-    async function getBlogDetails() {
-      try {
-        if (!blogId) {
-          throw new Error("Blog ID not found!");
-        }
+async function loadBlogDetails() {
+
+    const container = document.getElementById("blogDetails");
+
+    if (!blogId) {
+        container.textContent = "Blog ID is missing.";
+        return;
+    }
+
+    try {
 
         const response = await fetch(
-          "http://localhost:5000/api/blogs/" + blogId
+            `${API}/blogs/${encodeURIComponent(blogId)}`
         );
 
-        const data = await response.json();
+        const blog = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "Unable to load blog");
+            throw new Error(blog.message);
         }
 
-        const blog = data.blog;
+        container.innerHTML = `
 
-        blogDetails.innerHTML = `
-          <article class="blog-card">
+            <span>${escapeHTML(blog.category)}</span>
+
             <h1>${escapeHTML(blog.title)}</h1>
-            <p>Category: ${escapeHTML(blog.category)}</p>
-            <p>Author: ${escapeHTML(blog.author)}</p>
-            <p>Published: ${new Date(blog.createdAt).toLocaleDateString()}</p>
-            <hr>
-            <p class="blog-content">${escapeHTML(blog.content).replace(/\n/g, "<br>")}</p>
-          </article>
+
+            <p>
+                Written by
+                ${escapeHTML(blog.author?.name || "Unknown author")}
+            </p>
+
+            <div class="content">
+                ${escapeHTML(blog.content)}
+            </div>
+
         `;
 
-      } catch (error) {
-        console.error(error);
-        blogDetails.textContent = error.message;
-      }
+    } catch (error) {
+
+        container.textContent = error.message;
     }
+}
 
-    // Prevent blog text from being treated as HTML
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, function (character) {
-        const entities = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;"
-        };
-
-        return entities[character];
-      });
-    }
-
-    getBlogDetails();
-  </script>
+loadBlogDetails();
+</script>
 
 </body>
 </html>
