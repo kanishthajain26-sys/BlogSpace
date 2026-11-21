@@ -10,7 +10,7 @@ loginForm.addEventListener("submit", async function (event) {
 
     try {
         const response = await fetch(
-            "http://localhost:5000/api/auth/login",
+            "https://blogspace-us0g.onrender.com/api/auth/login",
             {
                 method: "POST",
                 headers: {
@@ -47,3 +47,4 @@ loginForm.addEventListener("submit", async function (event) {
         message.textContent = error.message;
     }
 });
+

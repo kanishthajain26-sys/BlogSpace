@@ -1,5 +1,5 @@
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://blogspace-us0g.onrender.com/api";
 
 let allBlogs = [];
 
@@ -158,3 +158,4 @@ document.getElementById("categoryFilter")
     ?.addEventListener("change", filterBlogs);
 
 loadBlogs();
+

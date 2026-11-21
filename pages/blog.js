@@ -1,5 +1,5 @@
 
-const API = "http://localhost:5000/api";
+const API = "https://blogspace-us0g.onrender.com/api";
 
 const token = localStorage.getItem("token");
 
@@ -123,3 +123,4 @@ if (form) {
 
     loadBlogForEdit();
 }
+

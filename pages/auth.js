@@ -1,5 +1,5 @@
 
-const API = "http://localhost:5000/api";
+const API = "https://blogspace-us0g.onrender.com/api";
 
 const registerForm = document.getElementById("registerForm");
 const loginForm = document.getElementById("loginForm");
@@ -104,3 +104,4 @@ if (loginForm) {
 
     });
 }
+
